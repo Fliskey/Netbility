@@ -1,0 +1,20 @@
+//语言c++
+//文件路径和文件名可以根据自身情况自由修改
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+int main()
+{
+	ifstream infile("C:\\Users\\omen\\Desktop\\123.txt");
+	ofstream outfile("C:\\Users\\omen\\Desktop\\1.bin",ios::out|ios::binary);
+	char c;
+	while(1)
+	{
+		infile>>std::noskipws>>c;
+		if(infile.eof())	break;
+		else outfile<<c;
+		
+	}
+	cout<<"格式转换完成！"<<endl;
+}
