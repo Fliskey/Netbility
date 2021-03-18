@@ -1,0 +1,18 @@
+//编程语言 c++
+//文件路径和文件名根据需要自行修改
+
+#include  <iostream>
+#include  <fstream>
+using namespace std;
+int main()
+{
+	ifstream infile("C:\\Users\\omen\\Desktop\\12.bin",ios::in|ios::binary);
+	ofstream outfile("C:\\Users\\omen\\Desktop\\1.txt"); 
+	char c;
+	while(1)
+	{
+		infile>>std::noskipws>>c;
+		if(infile.eof())	break;
+		else outfile<<c;
+	}
+}
