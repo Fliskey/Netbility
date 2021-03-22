@@ -13,6 +13,7 @@
 
 /*	更新日志
 		2021/3/20	修改了文件 之前没考虑到二维码定位点按行解析的时候没考虑17和26的特殊情况
+		2021/3/21   修改了定位点与数据点之间不存在间隔的bug  
 */
 
 #include <iostream>
@@ -27,6 +28,7 @@ int main()
 	char left = 186, right = 93;	//定位点345行左右部分
 	char Leftline1And7 = 254, leftLine2And6 = 130;		//左定位点1、7行和2、6行
 	char rightLine1And7 = 127, rightLine2And6 = 65;		//右定位点1、7行和2、6行
+	char ZERO = 0;
 	int x = 0; int y = 0;
 	//当数据没输入完时
 	while (1)
@@ -40,15 +42,14 @@ int main()
 			|| (y == 60 && x == 56) || (y == 61 && x == 56))
 		{
 			outfile << right;
-			x = 0;
-			y++;
+			x = x + 8;
 		}
-		else if ((y == 0 || y == 6 || y == 57 || y == 63) && x == 0)
+		else if ((y == 0 || y == 6 ) && x == 0)
 		{
 			outfile << Leftline1And7;
 			x = x + 8;
 		}
-		else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 0)
+		else if ((y == 1 || y == 5 ) && x == 0)
 		{
 			outfile << leftLine2And6;
 			x = x + 8;
@@ -56,34 +57,34 @@ int main()
 		else if ((y == 0 || y == 6 || y == 57 || y == 63) && x == 56)
 		{
 			outfile << rightLine1And7;
-			x = 0;
-			y++;
+			x = x + 8;
 		}
 		else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 56)
 		{
 			outfile << rightLine2And6;
-			x = 0;
-			y++;
+			x = x + 8;
+		}
+		else if ((x == 0 && y == 7) || (x == 56 && y == 7) || (x == 56 && y == 56))
+		{
+			outfile << ZERO;
+			x = x + 8;
 		}
 		else
 		{
-			if (y == 64)	y = 0;
 			infile >> std::noskipws >> c;
 			if (infile.eof())	break;
 			else
 			{
 				outfile << c;
-				if (x == 56)
-				{
-					x = 0;
-					y++;
-				}
-				else
-				{
-					x = x + 8;
-				}
+				x = x + 8;
 			}
 		}
+		if (x == 64)
+		{
+			x = 0;
+			y++;
+		}
+		if (y == 64)	y = 0;
 	}
 	//输入完毕 打入结束标志 以连续16*8个0作为结束标志
 	c = 0;
@@ -104,12 +105,12 @@ int main()
 				outfile << right;
 				x = x + 8;
 			}
-			else if ((y == 0 || y == 6 || y == 57 || y == 63) && x == 0)
+			else if ((y == 0 || y == 6 ) && x == 0)
 			{
 				outfile << Leftline1And7;
 				x = x + 8;
 			}
-			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 0)
+			else if ((y == 1 || y == 5 ) && x == 0)
 			{
 				outfile << leftLine2And6;
 				x = x + 8;
@@ -122,6 +123,11 @@ int main()
 			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 56)
 			{
 				outfile << rightLine2And6;
+				x = x + 8;
+			}
+			else if ((x == 0 && y == 7) || (x == 56 && y == 7) || (x == 56 && y == 56))
+			{
+				outfile << ZERO;
 				x = x + 8;
 			}
 			if (x == 64)
@@ -150,12 +156,12 @@ int main()
 				outfile << right;
 				x = x + 8;
 			}
-			else if ((y == 0 || y == 6 || y == 57 || y == 63) && x == 0)
+			else if ((y == 0 || y == 6  ) && x == 0)
 			{
 				outfile << Leftline1And7;
 				x = x + 8;
 			}
-			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 0)
+			else if ((y == 1 || y == 5  ) && x == 0)
 			{
 				outfile << leftLine2And6;
 				x = x + 8;
@@ -168,6 +174,11 @@ int main()
 			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 56)
 			{
 				outfile << rightLine2And6;
+				x = x + 8;
+			}
+			else if ((x == 0 && y == 7) || (x == 56 && y == 7) || (x == 56 && y == 56))
+			{
+				outfile << ZERO;
 				x = x + 8;
 			}
 			if (x == 64)
@@ -193,12 +204,12 @@ int main()
 				outfile << right;
 				x = x + 8;
 			}
-			else if ((y == 0 || y == 6 || y == 57 || y == 63) && x == 0)
+			else if ((y == 0 || y == 6 ) && x == 0)
 			{
 				outfile << Leftline1And7;
 				x = x + 8;
 			}
-			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 0)
+			else if ((y == 1 || y == 5 ) && x == 0)
 			{
 				outfile << leftLine2And6;
 				x = x + 8;
@@ -211,6 +222,11 @@ int main()
 			else if ((y == 1 || y == 5 || y == 58 || y == 62) && x == 56)
 			{
 				outfile << rightLine2And6;
+				x = x + 8;
+			}
+			else if ((x == 0 && y == 7) || (x == 56 && y == 7) || (x == 56 && y == 56))
+			{
+				outfile << ZERO;
 				x = x + 8;
 			}
 			if (x == 64)
