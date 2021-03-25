@@ -1,0 +1,81 @@
+class image_Processing
+{
+public:
+	void color_balance(Mat& matImage);
+	Mat image_Process(Mat srcImage);
+
+};
+
+//偏色调整
+void image_Processing::color_balance(Mat& matImage)
+{
+	vector<Mat> imageRGB;
+	split(matImage, imageRGB);
+
+	double R, G, B;
+	B = mean(imageRGB[0])[0];
+	G = mean(imageRGB[1])[0];
+	R = mean(imageRGB[2])[0];
+
+	double KR, KG, KB;
+	KB = (R + G + B) / (3 * B);
+	KG = (R + G + B) / (3 * G);
+	KR = (R + B + G) / (3 * R);
+
+	imageRGB[0] = imageRGB[0] * KB;
+	imageRGB[1] = imageRGB[1] * KG;
+	imageRGB[2] = imageRGB[2] * KR;
+
+	merge(imageRGB, matImage);
+	//imshow("白平衡后", matImage);
+}
+
+//亮度调整，增强原图亮度及对比度
+Mat brightInhence(Mat srcImage)
+{
+	int height = srcImage.rows;
+	int width = srcImage.cols;
+	Mat dst= Mat::zeros(srcImage.size(), srcImage.type());
+	float alpha = 1.5;
+	float beta = 30;
+
+	for (int row = 0; row < height; row++)
+	{
+		for (int col = 0; col < width; col++)
+		{
+			float b = srcImage.at<Vec3b>(row, col)[0];
+			float g = srcImage.at<Vec3b>(row, col)[1];
+			float r = srcImage.at<Vec3b>(row, col)[2];
+			
+			dst.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b * alpha + beta);
+			dst.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g * alpha + beta);
+			dst.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r * alpha + beta);
+
+		}
+	}
+	return dst;
+}
+
+//图片处理操作
+Mat image_Processing::image_Process(Mat srcImage)
+{
+	Mat dst = brightInhence(srcImage);
+	color_balance(dst);
+	Mat bilateralImage;
+	bilateralFilter(dst, bilateralImage, 5, 100, 11);//双边滤波
+
+	Mat grayImage;
+	cvtColor(bilateralImage, grayImage, CV_BGR2GRAY);
+	/*namedWindow("grayImage", WINDOW_AUTOSIZE);
+	imshow("grayImage", grayImage);*/
+
+	Mat binaryImage;
+	threshold(grayImage, binaryImage, 0, 255, CV_THRESH_OTSU | CV_THRESH_BINARY);
+	/*namedWindow("二值图");
+	imshow("二值图", binaryImage);
+	imwrite("C:/Users/hp/Desktop/25.jpg", binaryImage);
+
+	waitKey(0);*/
+	return binaryImage;
+
+}
