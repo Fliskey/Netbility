@@ -1,0 +1,85 @@
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <fstream>
+#include <stdlib.h>
+#include <time.h>
+#include <vector>
+#include <iostream>
+
+#define side 16//矩形块边长
+#define Num_of_Symbols 21//二维码每行的码元数(位数)
+#define edge 32//二维码左侧与窗口边距
+
+using namespace std;
+using namespace cv;
+
+
+
+void myRec(String str, Mat m);
+void myqrcode(ifstream& in_file);
+void randnum(ofstream& out_file)
+{
+	srand(time(NULL));
+	for (int i = 0; i < 441; i++)
+	{
+		out_file << rand() % 2;
+	}
+}
+
+int main(void)
+{
+	/*随机生成的数据存入二进制文件*/
+	ofstream out_file("C:/Users/hp/Desktop/test.bin", ios::out);//第一个参数为文件所在路径
+	if (!out_file)exit(-1);
+	randnum(out_file);//随机数生成并存入二进制文件
+	out_file.close();
+
+	/*从文件中读取字符串到字符串变量str1*/
+	ifstream in_file("C:/Users/hp/Desktop/test.bin", ios::in);//第一个参数：文件保存路径
+	myqrcode(in_file);
+	in_file.close();
+
+}
+void myRec(String str,Mat m)
+{
+	
+	char* ch = new char[10000];
+	strcpy_s(ch, 10000, str.c_str());
+	int i = 0;
+	const int r_edge = edge + Num_of_Symbols * side;
+	for (int y = edge; y <= r_edge; y += side)
+	{
+		for (int x = edge; x <= r_edge; x += side)
+		{
+			if (ch[i] == '0')rectangle(m, Point(x, y), Point(x + side, y + side), Scalar(0,0,0), -1);
+			i++;
+			if (ch[i] == '\0')break;
+		}
+		if (ch[i] == '\0')break;
+	}
+	delete[]ch;
+}
+
+void myqrcode(ifstream& in_file)
+{
+	String str1;
+	//getline(in_file, str1);
+	in_file >> str1;
+
+	const Scalar& s = Scalar(255, 255, 255);
+	char atom_window[] = "Drawing 1: Atom";
+	//Mat atom_image = Mat::zeros(400, 400, CV_8UC3);
+	Mat atom_image = Mat(400, 420, CV_8UC3, s);
+
+	myRec(str1, atom_image);
+	imshow(atom_window, atom_image);
+	moveWindow(atom_window, 375, 150);
+	waitKey(0);
+
+	/*图像文件导出，保存*/
+	vector<int> compression_params;
+	compression_params.push_back(IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(9); // .png压缩级别，0->9压缩等级增大，默认值为3
+	imwrite("C:/Users/hp/Desktop/pic3.png", atom_image, compression_params);//第一个参数为保存路径
+}
